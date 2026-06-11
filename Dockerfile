@@ -2,7 +2,6 @@
 FROM runpod/worker-comfyui:5.8.4-base
 ARG HF_TOKEN=""
 
-# Strict bash: exit on error (-e), print commands (-x), fail on pipe (-o pipefail)
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
 # ═══════════════════════════════════════════════════════════════
@@ -28,12 +27,12 @@ RUN echo ">>> Fetching tags..." && \
        git checkout "$LATEST"; }) && \
     echo ">>> Impact Pack version: $(git describe --tags --always 2>/dev/null || git log --oneline -1)"
 
-# Step 3: Install Python requirements (separate layer — verbose output)
+# Step 3: Install Python requirements
 RUN echo ">>> Installing Impact Pack Python requirements..." && \
     pip install --no-cache-dir -r requirements.txt 2>&1 | tail -20 && \
     echo ">>> Requirements installed OK"
 
-# Step 4: Run install.py with a timeout — it hangs trying to download models
+# Step 4: Run install.py with a timeout
 RUN echo ">>> Running Impact Pack install.py (timeout 180s)..." && \
     timeout 180 python install.py 2>&1 | tail -30; \
     EXIT_CODE=${PIPESTATUS[0]}; \
@@ -45,9 +44,11 @@ RUN echo ">>> Running Impact Pack install.py (timeout 180s)..." && \
       echo ">>> WARN: install.py exited with code $EXIT_CODE"; \
     fi
 
-# Step 5: Verify FaceDetailer is present — this is the whole reason we're here
+# Step 5: Verify FaceDetailer — fixed to add CWD to sys.path
 RUN echo ">>> Verifying FaceDetailer node..." && \
     python -c "\
+import sys, os; \
+sys.path.insert(0, os.getcwd()); \
 from impact.impact_pack import NODE_CLASS_MAPPINGS; \
 keys = sorted(NODE_CLASS_MAPPINGS.keys()); \
 assert 'FaceDetailer' in NODE_CLASS_MAPPINGS, \
@@ -58,10 +59,7 @@ print('SUCCESS: FaceDetailer found in', len(NODE_CLASS_MAPPINGS), 'Impact Pack n
 #  OTHER CUSTOM NODES
 # ═══════════════════════════════════════════════════════════════
 
-# Impact Subpack (companion to Impact Pack)
 RUN comfy node install comfyui-impact-subpack@1.3.5 --mode remote
-
-# Custom Scripts
 RUN comfy node install comfyui-custom-scripts@1.2.5
 
 # FaceRestore CF (pinned to specific commit)
@@ -73,7 +71,6 @@ RUN git clone https://github.com/mav-rik/facerestore_cf \
       git checkout 67f90bc6be976fb58169866155346b0da13bebee) || \
      echo "WARN: commit 67f90bc6be976fb58169866155346b0da13bebee unreachable")
 
-# IPAdapter Plus
 RUN comfy node install comfyui_ipadapter_plus@2.0.0 --mode remote
 
 # Comfyroll (pinned to specific commit)
@@ -85,11 +82,10 @@ RUN git clone https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes \
       git checkout d78b780ae43fcf8c6b7c6505e6ffb4584281ceca) || \
      echo "WARN: commit d78b780ae43fcf8c6b7c6505e6ffb4584281ceca unreachable")
 
-# KJNodes
 RUN comfy node install comfyui-kjnodes@1.0.8
 
 # ═══════════════════════════════════════════════════════════════
-#  EXPLICIT PIP DEPS (facerestore_cf + Impact Pack model loaders)
+#  EXPLICIT PIP DEPS
 # ═══════════════════════════════════════════════════════════════
 
 RUN pip install --no-cache-dir lpips filterpy "ultralytics>=8.0.0"
@@ -98,7 +94,6 @@ RUN pip install --no-cache-dir lpips filterpy "ultralytics>=8.0.0"
 #  MODEL DOWNLOADS
 # ═══════════════════════════════════════════════════════════════
 
-# Helper: retry a single model download with exponential backoff
 RUN cat > /usr/local/bin/download_model.sh <<'SCRIPT'
 #!/bin/bash
 set -euo pipefail
