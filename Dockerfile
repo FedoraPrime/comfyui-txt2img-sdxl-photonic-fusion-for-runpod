@@ -51,5 +51,5 @@ RUN download_model.sh 'https://madville.org/ai/models/SDXL/Juggernaut-XL_v9_RunD
 RUN download_model.sh 'https://madville.org/ai/models/SDXL/photorealisticAllPurpose_v40-002.safetensors' 'models/checkpoints/SDXL' 'photorealisticAllPurpose_v40-002.safetensors'
 RUN download_model.sh 'https://madville.org/ai/models/SDXL/pornworksBadBoysPhoto_v06-004.safetensors' 'models/checkpoints/SDXL' 'pornworksBadBoysPhoto_v06-004.safetensors'
 RUN download_model.sh 'https://madville.org/ai/models/SDXL/realvisxlV50_v40Bakedvae.safetensors' 'models/checkpoints/SDXL' 'realvisxlV50_v40Bakedvae.safetensors'
-RUN download_model.sh 'https://madville.org/ai/models/SDXL/Sony%20Lens%20XL-003.safetensors'         'models/checkpoints/SDXL' 'Sony_Lens_XL-003.safetensors'
+RUN download_model.sh 'https://madville.org/ai/models/SDXL/Sony Lens XL-003.safetensors'         'models/checkpoints/SDXL' 'Sony_Lens_XL-003.safetensors'
 RUN download_model.sh 'https://madville.org/ai/models/Pony/virileStallion_v50Photoreal.safetensors' 'models/checkpoints/Pony' 'virileStallion_v50Photoreal.safetensors'
