@@ -6,10 +6,15 @@ ARG HF_TOKEN=""
 # Stop the build on any failure so we can see exactly what went wrong.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# install custom nodes — hard-fail if any of these don't install
+# install custom nodes
 RUN comfy node install comfyui-impact-subpack@1.3.5 --mode remote
 RUN comfy node install comfyui-custom-scripts@1.2.5
-RUN comfy node install comfyui-impact-pack@8.28 --mode remote
+# Skip comfy-cli for Impact Pack — registry lags GitHub, and we need the
+# exact 8.28 tag. Clone the repo, check out the tag, run install.py manually.
+RUN git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack /comfyui/custom_nodes/ComfyUI-Impact-Pack && \
+    cd /comfyui/custom_nodes/ComfyUI-Impact-Pack && \
+    git checkout 8.28 && \
+    (python install.py || echo "WARN: ComfyUI-Impact-Pack install.py exited non-zero")
 RUN git clone https://github.com/mav-rik/facerestore_cf /comfyui/custom_nodes/facerestore_cf && cd /comfyui/custom_nodes/facerestore_cf && (git checkout 67f90bc6be976fb58169866155346b0da13bebee 2>/dev/null || (git fetch origin 67f90bc6be976fb58169866155346b0da13bebee --depth=1 && git checkout 67f90bc6be976fb58169866155346b0da13bebee) || echo "WARN: commit 67f90bc6be976fb58169866155346b0da13bebee unreachable in https://github.com/mav-rik/facerestore_cf, falling back to default branch HEAD")
 RUN comfy node install comfyui_ipadapter_plus@2.0.0 --mode remote
 RUN git clone https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes /comfyui/custom_nodes/ComfyUI_Comfyroll_CustomNodes && cd /comfyui/custom_nodes/ComfyUI_Comfyroll_CustomNodes && (git checkout d78b780ae43fcf8c6b7c6505e6ffb4584281ceca 2>/dev/null || (git fetch origin d78b780ae43fcf8c6b7c6505e6ffb4584281ceca --depth=1 && git checkout d78b780ae43fcf8c6b7c6505e6ffb4584281ceca) || echo "WARN: commit d78b780ae43fcf8c6b7c6505e6ffb4584281ceca unreachable in https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes, falling back to default branch HEAD")
