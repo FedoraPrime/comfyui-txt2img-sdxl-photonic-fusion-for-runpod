@@ -42,7 +42,7 @@ RUN chmod +x /usr/local/bin/download_model.sh
 RUN download_model.sh 'https://madville.org/ai/models/dreamshaper_8.safetensors'           'models/checkpoints' 'dreamshaper_8.safetensors'
 RUN download_model.sh 'https://madville.org/ai/models/SDXL/photonicFusionSDXL_final-005.safetensors' 'models/checkpoints/SDXL' 'PhotonicFusionSDXL_V.1.3.safetensors'
 RUN download_model.sh 'https://madville.org/ai/models/SDXL/cyberrealisticXL_v70.safetensors'     'models/checkpoints/SDXL' 'cyberrealisticXL_v70.safetensors'
-RUN download_model.sh 'https://madville.org/ai/models/SDXL/epicrealismXL_xxxlLastfameRealism.safetensors' 'models/checkpoints/SDXL' 'epicrealismXL_xxxlLastfameRealism.safetensors'
+RUN download_model.sh 'https://madville.org/ai/models/SDXL/epicrealismXL_vxviLastfameRealism.safetensors' 'models/checkpoints/SDXL' 'epicrealismXL_vxvlLastfameRealism.safetensors'
 RUN download_model.sh 'https://madville.org/ai/models/SDXL/juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors' 'models/checkpoints/SDXL' 'juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors'
 RUN download_model.sh 'https://madville.org/ai/models/SDXL/photorealisticAllPurpose_v40-002.safetensors' 'models/checkpoints/SDXL' 'photorealisticAllPurpose_v40-002.safetensors'
 RUN download_model.sh 'https://madville.org/ai/models/SDXL/pornworksBadBoysPhoto_v06-004.safetensors' 'models/checkpoints/SDXL' 'pornworksBadBoysPhoto_v06-004.safetensors'
