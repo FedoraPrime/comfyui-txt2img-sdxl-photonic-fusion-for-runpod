@@ -1,18 +1,22 @@
 # clean base image containing only comfyui, comfy-cli and comfyui-manager
 FROM runpod/worker-comfyui:5.8.4-base
 
-# build-time tokens for gated downloads — never baked into final image.
-# pass via: docker build --build-arg HF_TOKEN=$HF_TOKEN ...
 ARG HF_TOKEN=""
 
 # install custom nodes into comfyui
-RUN comfy node install --exit-on-fail comfyui-impact-subpack@1.2.9 --mode remote || (echo "WARN: comfyui-impact-subpack@1.2.9 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail comfyui-impact-subpack --mode remote)
+RUN comfy node install --exit-on-fail comfyui-impact-subpack@1.3.5 --mode remote || (echo "WARN: comfyui-impact-subpack@1.3.5 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail comfyui-impact-subpack --mode remote)
 RUN comfy node install --exit-on-fail comfyui-custom-scripts@1.2.5 || (echo "WARN: comfyui-custom-scripts@1.2.5 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail comfyui-custom-scripts)
 RUN comfy node install --exit-on-fail comfyui-impact-pack@8.28 --mode remote || (echo "WARN: comfyui-impact-pack@8.28 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail comfyui-impact-pack --mode remote)
 RUN git clone https://github.com/mav-rik/facerestore_cf /comfyui/custom_nodes/facerestore_cf && cd /comfyui/custom_nodes/facerestore_cf && (git checkout 67f90bc6be976fb58169866155346b0da13bebee 2>/dev/null || (git fetch origin 67f90bc6be976fb58169866155346b0da13bebee --depth=1 && git checkout 67f90bc6be976fb58169866155346b0da13bebee) || echo "WARN: commit 67f90bc6be976fb58169866155346b0da13bebee unreachable in https://github.com/mav-rik/facerestore_cf, falling back to default branch HEAD")
 RUN comfy node install --exit-on-fail comfyui_ipadapter_plus@2.0.0 --mode remote || (echo "WARN: comfyui_ipadapter_plus@2.0.0 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail comfyui_ipadapter_plus --mode remote)
 RUN git clone https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes /comfyui/custom_nodes/ComfyUI_Comfyroll_CustomNodes && cd /comfyui/custom_nodes/ComfyUI_Comfyroll_CustomNodes && (git checkout d78b780ae43fcf8c6b7c6505e6ffb4584281ceca 2>/dev/null || (git fetch origin d78b780ae43fcf8c6b7c6505e6ffb4584281ceca --depth=1 && git checkout d78b780ae43fcf8c6b7c6505e6ffb4584281ceca) || echo "WARN: commit d78b780ae43fcf8c6b7c6505e6ffb4584281ceca unreachable in https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes, falling back to default branch HEAD")
 RUN comfy node install --exit-on-fail comfyui-kjnodes@1.0.8 || (echo "WARN: comfyui-kjnodes@1.0.8 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail comfyui-kjnodes)
+
+# Install missing Python dependencies that the custom nodes need but the comfy-cli
+# install may have missed. These are normally pulled in by Impact Pack's install.py
+# and facerestore_cf's requirements.txt, but if those failed silently they won't
+# be in the embedded Python.
+RUN pip install --no-cache-dir lpips filterpy ultralytics>=8.0.0
 
 # download models into comfyui
 # face detection yolo for impact pack / face detailer
