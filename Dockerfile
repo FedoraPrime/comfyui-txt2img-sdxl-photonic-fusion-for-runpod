@@ -39,12 +39,12 @@ RUN echo ">>> Running Impact Pack install.py (timeout 180s)..." && \
     if [ "$EXIT_CODE" -eq 0 ]; then \
       echo ">>> install.py completed successfully"; \
     elif [ "$EXIT_CODE" -eq 124 ]; then \
-      echo ">>> WARN: install.py timed out after 180s (expected — it tries to download models)"; \
+      echo ">>> WARN: install.py timed out after 180s (expected)"; \
     else \
       echo ">>> WARN: install.py exited with code $EXIT_CODE"; \
     fi
 
-# Step 5: Verify the files exist (don't try to import — ComfyUI's node loader handles that at runtime)
+# Step 5: Verify files exist (can't do live import — ComfyUI isn't loaded at build time)
 RUN echo ">>> Verifying Impact Pack files..." && \
     test -d impact && \
     test -f impact/impact_pack.py && \
@@ -129,3 +129,5 @@ RUN download_model.sh \
     'https://madville.org/ai/models/SDXL/photonicFusionSDXL_final-005.safetensors' \
     'models/checkpoints/SDXL' \
     'PhotonicFusionSDXL_V.1.3.safetensors'
+
+    
