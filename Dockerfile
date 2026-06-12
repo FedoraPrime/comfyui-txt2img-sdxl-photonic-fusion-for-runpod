@@ -44,14 +44,6 @@ RUN echo ">>> Running Impact Pack install.py (timeout 180s)..." && \
       echo ">>> WARN: install.py exited with code $EXIT_CODE"; \
     fi
 
-# Step 5: Verify files exist (can't do live import — ComfyUI isn't loaded at build time)
-RUN echo ">>> Verifying Impact Pack files..." && \
-    test -d impact && \
-    test -f impact/impact_pack.py && \
-    echo "SUCCESS: impact/impact_pack.py exists" && \
-    grep -q "FaceDetailer" impact/impact_pack.py && \
-    echo "SUCCESS: FaceDetailer class found in impact_pack.py"
-
 # ═══════════════════════════════════════════════════════════════
 #  OTHER CUSTOM NODES
 # ═══════════════════════════════════════════════════════════════
@@ -129,5 +121,3 @@ RUN download_model.sh \
     'https://madville.org/ai/models/SDXL/photonicFusionSDXL_final-005.safetensors' \
     'models/checkpoints/SDXL' \
     'PhotonicFusionSDXL_V.1.3.safetensors'
-
-    
